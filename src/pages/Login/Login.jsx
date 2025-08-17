@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useState } from "react";
 import {
   loadCaptchaEnginge,
   LoadCanvasTemplate,
-  LoadCanvasTemplateNoReload,
   validateCaptcha,
 } from "react-simple-captcha";
 import { AuthContext } from "../../providers/AuthProvider";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Swal from "sweetalert2";
 
 const Login = () => {
@@ -18,12 +18,13 @@ const Login = () => {
   }, []);
 
   const handleLogin = (event) => {
-    event.preventdefault();
+    event.preventDefault();
     const form = event.target;
     const email = form.email.value;
     const password = form.password.value;
     console.log(email, password);
-    signIn(email, password).then((result) => {
+    signIn(email, password)
+    .then((result) => {
       const user = result.user;
       console.log(user);
       Swal.fire({
@@ -51,8 +52,15 @@ const Login = () => {
     if (validateCaptcha(user_captcha_value)) {
       setDisabled(false);
     }
+    else{
+      setDisabled(true)
+    }
   };
   return (
+    <>
+    <Helmet>
+      <title>Bistro Boss | Login</title>
+    </Helmet>
     <div className="hero bg-base-200 min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="text-center lg:text-left">
@@ -87,10 +95,10 @@ const Login = () => {
                 <LoadCanvasTemplate />
               </label>
               <input
-                type="text"
                 onBlur={handleValidateCaptcha}
+                type="text"
                 name="captcha"
-                className="input"
+                className="input input-bordered"
                 placeholder="Type the Captcha Above"
               />
               <input
@@ -103,14 +111,16 @@ const Login = () => {
           </form>
           <p className="text-center pb-3">
             <small>
-              <Link className="text-orange-500" to="/signup">
-                New here? Create an Account.
+               New here?
+              <Link className="text-orange-500 px-2"   to="/signup"> 
+                Please create an account.
               </Link>
             </small>
           </p>
         </div>
       </div>
     </div>
+    </>
   );
 };
 
