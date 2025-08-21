@@ -1,15 +1,18 @@
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../providers/AuthProvider";
+import Swal from "sweetalert2";
 
 const SignUp = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
-  const { createUser } = useContext(AuthContext);
+  const { createUser, updateUserProfile } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const onSubmit = (data) => {
     console.log(data);
@@ -17,6 +20,18 @@ const SignUp = () => {
       .then((result) => {
         const loggedUser = result.user;
         console.log("logged User is here", loggedUser);
+        updateUserProfile(data.name, data.photoURL)
+          .then(() => {
+            console.log("user profile info updated");
+            reset();
+            Swal.fire({
+              title: "User created Successfully!",
+              icon: "success",
+              draggable: true,
+            });
+            navigate('/')
+          })
+          .catch((error) => console.log(error));
       })
       .catch((error) => {
         console.error("Error creating user:", error.message);
@@ -47,6 +62,16 @@ const SignUp = () => {
               />
               {errors.name && (
                 <span className="text-red-600">This field is required</span>
+              )}
+              <label className="label">Photo URL</label>
+              <input
+                type="text"
+                {...register("photoURL", { required: true })}
+                className="input"
+                placeholder="Your Photo URL"
+              />
+              {errors.photoURL && (
+                <span className="text-red-600">Photo URL is required</span>
               )}
               <label className="label">Email</label>
               <input
